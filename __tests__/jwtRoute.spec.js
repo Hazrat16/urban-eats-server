@@ -2,7 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const request = require("supertest");
 
-const jwtRouter = require("../path-to-your-jwt-router-file"); // Adjust the path to your jwt route file
+const authRoute = require("../routes/Auth");
 
 jest.mock("jsonwebtoken");
 
@@ -12,7 +12,7 @@ describe("JWT Route", () => {
   beforeEach(() => {
     app = express();
     app.use(express.json());
-    app.use("/", jwtRouter);
+    app.use("/", authRoute);
   });
 
   it("should return a JWT token when valid user data is provided", async () => {
