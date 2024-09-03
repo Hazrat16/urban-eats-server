@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { db } = require("../config/dbConnection");
+const { db } =     require("../config/dbConnection");
 
 const verifyToken = (req, res, next) => {
   if (!req.headers.authorization) {
@@ -16,7 +16,7 @@ const verifyToken = (req, res, next) => {
 };
 
 const verifyAdmin = async (req, res, next) => {
-  const email = req.decoded.email;
+  const email =                                               req.decoded.email;
   const query = { email: email };
   const user = await db.collection("users").findOne(query);
   const isAdmin = user?.role === "admin";
