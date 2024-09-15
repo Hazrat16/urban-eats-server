@@ -31,7 +31,7 @@ app.use("", adminRoutes);
 
 // Default route
 app.get("/", (req, res) => {
-  res.send("here we go..");
+  res.send("here we go...");
 });
 
 app.listen(port, () => {
