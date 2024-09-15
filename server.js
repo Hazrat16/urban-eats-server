@@ -1,15 +1,14 @@
-const express = require("express");
 const cors = require("cors");
-const jwt = require("jsonwebtoken");
+const express = require("express");
 require("dotenv").config();
-const { connectDB } = require('./config/dbConnection');
-const authRoutes = require('./routes/Auth');
-const userRoutes = require('./routes/Users');
-const menuRoutes = require('./routes/Menu');
-const reviewRoutes = require('./routes/Review');
-const cartRoutes = require('./routes/Cart');
-const bookingRoutes = require('./routes/Bookings');
-const adminRoutes = require('./routes/Admin');
+const { connectDB } = require("./config/dbConnection");
+const adminRoutes = require("./routes/Admin");
+const authRoutes = require("./routes/Auth");
+const bookingRoutes = require("./routes/Bookings");
+const cartRoutes = require("./routes/Cart");
+const menuRoutes = require("./routes/Menu");
+const reviewRoutes = require("./routes/Review");
+const userRoutes = require("./routes/Users");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -22,17 +21,17 @@ app.use(express.json());
 connectDB();
 
 // Routes
-app.use('/', authRoutes);
-app.use('/users', userRoutes);
-app.use('/menu', menuRoutes);
-app.use('/reviews', reviewRoutes);
-app.use('/carts', cartRoutes);
-app.use('/bookings', bookingRoutes);
-app.use('', adminRoutes);
+app.use("/", authRoutes);
+app.use("/users", userRoutes);
+app.use("/menu", menuRoutes);
+app.use("/reviews", reviewRoutes);
+app.use("/carts", cartRoutes);
+app.use("/bookings", bookingRoutes);
+app.use("", adminRoutes);
 
 // Default route
 app.get("/", (req, res) => {
-  res.send("here we go");
+  res.send("here we go..");
 });
 
 app.listen(port, () => {
