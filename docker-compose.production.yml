@@ -7,20 +7,14 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      target: development
-    stdin_open: true
+      target: production
     ports:
-      - "5000:5000"
+      - "80:5000"
     environment:
-      - NODE_ENV=development
-      - MONGO_URL=mongodb://127.0.0.1:27017/urban-eats
-    volumes:
-      - .:/app
-      - /app/node_modules
+      - NODE_ENV=production
+      - MONGO_URL=mongodb://<your-prod-mongo-url>:27017/mydatabase
     depends_on:
       - mongo
-    command: npm run dev
-    network_mode: host
 
   mongo:
     image: mongo:5.0
@@ -35,4 +29,3 @@ networks:
 
 volumes:
   mongo-data:
-    driver: local

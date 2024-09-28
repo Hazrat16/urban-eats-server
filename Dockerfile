@@ -1,13 +1,31 @@
-FROM node:20-alpine
+FROM node:20-alpine AS base
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install 
+RUN npm install
 
-COPY . .
+COPY . /app
 
-EXPOSE 3000
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+USER appuser
+
+EXPOSE 5173
+
+FROM base AS development
+
 
 CMD ["npm", "run", "dev"]
+
+FROM base AS build
+
+RUN npm run build
+
+FROM base AS production
+
+RUN npm install --only=production
+
+COPY --from=build /app/dist /app/dist
+
+CMD ["npm", "run", "start"]
