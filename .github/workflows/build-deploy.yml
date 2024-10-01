@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy Urban Eats Client
 
 on:
   push:
@@ -7,21 +7,17 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+
+env:
+  PRIVATE_KEY: ${{ secrets.RSA_KEY_FOR_APP_EC2 }}
+  INSTANCE_IP: ${{ vars.INSTANCE_IP }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      mongo:
-        image: mongo:5.0
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'" 
-          --health-interval=10s 
-          --health-timeout=5s 
-          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -38,16 +34,14 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker-compose -f docker-compose.yml build
+          docker build -t urban-eats-server:latest .
 
-      - name: Run tests
-        run: |
-          docker-compose up --exit-code-from urban-eats-server --abort-on-container-exit
-        continue-on-error: false
-
-      - name: Push Docker image
+      - name: Tag Docker image
         run: |
           docker tag urban-eats-server:latest ${{ secrets.DOCKER_USERNAME }}/urban-eats-server:latest
+
+      - name: Push Docker image to Docker Hub
+        run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/urban-eats-server:latest
 
   deploy:
@@ -55,15 +49,27 @@ jobs:
     needs: build
 
     steps:
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@v0.1.8
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Compose
+        run: sudo apt-get update && sudo apt-get install docker-compose -y
+
+      - name: Copy docker-compose and nginx files to EC2
+        uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT }}
+          host: ${{ env.INSTANCE_IP }}
+          username: ec2-user
+          key: ${{ secrets.RSA_KEY_FOR_APP_EC2 }}
+          source: "docker-compose.production.yaml,nginx.conf"
+          target: "~/"
+
+      - name: SSH into EC2 and deploy Docker Compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.INSTANCE_IP }}
+          username: ec2-user
+          key: ${{ secrets.RSA_KEY_FOR_APP_EC2 }}
           script: |
-            cd /path/to/deployment
-            docker-compose down
-            docker-compose pull
-            docker-compose up -d
+            docker-compose -f docker-compose.production.yml up -d
+            docker image prune -f

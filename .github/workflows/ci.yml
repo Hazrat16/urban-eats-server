@@ -39,9 +39,9 @@ jobs:
             HEAD_BRANCH="${{ github.event.pull_request.head.sha }}"
             CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH" "$HEAD_BRANCH" | grep -E '\.jsx?$')
             
-            # Trim "urban-eats-client/" prefix from file paths if any files are found
+            # Trim "urban-eats-server/" prefix from file paths if any files are found
             if [ -n "$CHANGED_FILES" ]; then
-              CHANGED_FILES=$(echo "$CHANGED_FILES" | sed 's|^urban-eats-client/||')
+              CHANGED_FILES=$(echo "$CHANGED_FILES" | sed 's|^urban-eats-server/||')
               # Convert newline-separated list of files to space-separated list
               CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ' ')
             fi
