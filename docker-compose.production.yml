@@ -12,7 +12,7 @@ services:
       - "80:5000"
     environment:
       - NODE_ENV=production
-      - MONGO_URL=mongodb://<your-prod-mongo-url>:27017/mydatabase
+      - MONGO_URL=mongodb://mongo:27017/urban-eats
     depends_on:
       - mongo
 
