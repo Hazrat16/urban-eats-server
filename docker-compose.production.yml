@@ -12,7 +12,7 @@ services:
       - "80:5000"
     environment:
       - NODE_ENV=production
-      - MONGO_URL=mongodb://mongo:27017/urban-eats
+      - MONGO_URL=mongodb+srv://<DB_USER>:<DB_PASSWORD>@cluster0.t04cp.mongodb.net/urban-eats?retryWrites=true&w=majority
     depends_on:
       - mongo
 
@@ -31,3 +31,6 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - urban-eats-server
+
+volumes:
+  mongo-data:
