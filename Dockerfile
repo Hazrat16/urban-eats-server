@@ -26,6 +26,4 @@ FROM base AS production
 
 RUN npm install --only=production
 
-COPY --from=build /app/dist /app/dist
-
 CMD ["npm", "run", "start"]
