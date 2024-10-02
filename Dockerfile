@@ -20,7 +20,7 @@ CMD ["npm", "run", "dev"]
 
 FROM base AS build
 
-RUN npm run build
+#RUN npm run build
 
 FROM base AS production
 
